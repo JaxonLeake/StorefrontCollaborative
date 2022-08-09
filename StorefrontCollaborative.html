@@ -4,15 +4,10 @@
 </HEAD>
 <BODY>
 <SCRIPT LANGUAGE="JavaScript">
-    let canvas;
-    let context;
-
 
     // Global Variables
     let items = [{Name:"ItemName1", Description:"ItemDescription1", Images:["Images\\1.png"], Price:10, Stock:3},
         {Name:"ItemName2", Description:"ItemDescription2", Images:["Images\\2.jpg"], Price:15, Stock:7}];
-
-    let selected = null;
 
     /**
      * Main function
@@ -23,111 +18,17 @@
 
     function itemManagement() {
         document.body.innerHTML = "";
-        canvas = document.createElement('canvas');
-        canvas.id = 'canvas';
-        canvas.width = window.innerWidth-50;
-        canvas.height = window.innerHeight-50;
-
-        document.body.appendChild(canvas); // adds the canvas to the body element
-        context = canvas.getContext('2d');
-        drawSquare({x:0,y:0}, {x: canvas.width, y: canvas.height}, {hue: 0, sat: 0, lum: 100}, 1, -1); // Background
-        drawSquare({x:0,y:0}, {x: canvas.width, y: canvas.height}, {hue: 0, sat: 0, lum: 0}, 1, 5); // Background
-        drawSquare({x:0,y:0}, {x: canvas.width, y: 60}, {hue: 0, sat: 0, lum: 80}, 1, -1); // Top Banner
-        drawSquare({x:0,y:0}, {x: canvas.width, y: 60}, {hue: 0, sat: 0, lum: 50}, 1, 5);
-        drawText("Item Catalogue", 30, {hue: 0, sat: 0, lum: 30}, 20, 40);
-        let searchBoxStart = 350, searchBoxEnd = canvas.width-300, maxSearchBoxSize = 500;
-        if(searchBoxEnd - searchBoxStart > maxSearchBoxSize) { searchBoxEnd = searchBoxStart + maxSearchBoxSize; }
-        if(searchBoxStart + 150 < searchBoxEnd) { // Search box will not render if it's less than 150 pixels wide
-            drawSquare({x:searchBoxStart,y:10}, {x: searchBoxEnd, y: 50}, {hue: 0, sat: 0, lum: 90}, 1, -1); // Search Box
-            drawSquare({x:searchBoxStart,y:10}, {x: searchBoxEnd, y: 50}, {hue: 0, sat: 0, lum: 60}, 1, 5);
-            drawText("Search . . .", 30, {hue: 0, sat: 0, lum: 60}, searchBoxStart+20, 40);
-            if(selected == "Search Box") {
-
-            }
-        }
-        drawSquare({x:canvas.width-250,y:10}, {x: canvas.width-20, y: 50}, {hue: 0, sat: 0, lum: 70}, 1, -1); // Account Box
-        drawSquare({x:canvas.width-250,y:10}, {x: canvas.width-20, y: 50}, {hue: 0, sat: 0, lum: 50}, 1, 5);
-        drawText("Account Name", 30, {hue: 0, sat: 0, lum: 30}, canvas.width-230, 40);
-        /*for (let item of items) {
+        document.write("Item Management<BR>");
+        for (let item of items) {
             document.write("<BR>" + item.Name + "<BR>");
             document.write("<img src=\"" + item.Images[0] + "\" alt=\"text\" width=\"200\" height=\"200\"><BR>");
             document.write(item.Description + "<BR>");
             document.write("$" + item.Price + " Each<BR>");
             document.write(item.Stock + "x Remaining<BR>");
-            let button = document.createElement("button");
-            button.innerHTML = "Edit";
-            document.body.appendChild(button);
-            document.write("<BR>");
-        }*/
-
-        // Add event listener for `click` events.
-        canvas.addEventListener('click', function(event) {
-            let x = event.pageX,
-                y = event.pageY;
-            console.log("CLICK(" + x + ", " + y + ")");
-            if(x > searchBoxStart && x < searchBoxEnd && y > 10 && y < 50) {
-                console.log("Search Box");
-                selected = "Search Box"
-            }
-        }, false);
-    }
-
-    /**
-     * Draw text to screen where x and y represent the bottom right corner of text
-     * @param text the text to write
-     * @param size size in pixels
-     * @param {{hue, sat, lum}} colour the points hsl colour
-     * @param x distance that left side of text is from left side of screen
-     * @param y distance that top of text is from top of screen
-     */
-    function drawText(text, size, colour, x, y) {
-        context.beginPath();
-        context.font = size + 'px serif';
-        context.fillStyle = 'hsl('+ colour.hue + ',' + colour.sat + '%,' + colour.lum + '%)';
-        context.globalAlpha = 1;
-        context.fillText(text, x, y);
-        context.closePath();
-    }
-
-    /**
-     * @param {Object} v1, {Object} v2 - the two 2d vertexes that describe the square
-     * @param {{hue, sat, lum}} colour the points hsl colour
-     * @param {number} opacity 0-1
-     * @param {number} strokeSize width of the outline, 0 or less to fill
-     * @returns void
-     */
-    function drawSquare(v1, v2, colour, opacity, strokeSize) {
-        drawPolygon([{x: v1.x, y: v1.y}, {x: v1.x, y: v2.y}, {x: v2.x, y: v2.y}, {x: v2.x, y: v1.y}], colour, opacity, strokeSize);
-    }
-
-    /**
-     * Draws a polygon with vertices at the given screen positions
-     * @param {[{x, y}]} vertices Array of vertices that represent each of the 2d vertexes defining the polygon
-     * @param {{hue, sat, lum}} colour the points hsl colour
-     * @param {number} opacity 0-1
-     * @param {number} strokeSize width of the outline, 0 or less to fill
-     * @returns void
-     */
-    function drawPolygon(vertices, colour, opacity, strokeSize) {
-        console.log(vertices);
-        context.beginPath();
-        context.fillStyle = 'hsl('+ colour.hue + ',' + colour.sat + '%,' + colour.lum + '%)';
-        context.globalAlpha = opacity;
-        context.moveTo(vertices[0].x, vertices[0].y);
-        for(let i = 1; i<vertices.length; i++) {
-            context.lineTo(vertices[i].x, vertices[i].y);
-        }
-        context.closePath();
-        if(strokeSize <= 0) {
-            context.fill();
-        } else {
-            context.lineWidth = 1;
-            context.stroke();
         }
     }
-
     bigDog(); // Call the main function to start the program
-
+    // Test Changes
 </SCRIPT>
 </BODY>
 </HTML>
