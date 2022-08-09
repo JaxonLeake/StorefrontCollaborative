@@ -4,15 +4,24 @@
 </HEAD>
 <BODY>
 <SCRIPT LANGUAGE="JavaScript">
-    let canvas;
-    let context;
 
-
-    // Global Variables
+    // System-wide variables
     let items = [{Name:"ItemName1", Description:"ItemDescription1", Images:["Images\\1.png"], Price:10, Stock:3},
         {Name:"ItemName2", Description:"ItemDescription2", Images:["Images\\2.jpg"], Price:15, Stock:7}];
 
+    // Storage
+    let canvas;
+    let context;
+    let SearchboxContent = "";
+
+    // Configuration
+    let searchBoxStart, searchBoxEnd, maxSearchBoxSize;
+    let cursorBlink = 500;
+
+
+
     let selected = null;
+    let lastClickTime = Date.now();
 
     /**
      * Main function
@@ -30,24 +39,95 @@
 
         document.body.appendChild(canvas); // adds the canvas to the body element
         context = canvas.getContext('2d');
+        drawWebsite();
+        // Add event listener for `click` events.
+        canvas.addEventListener('click', function(event) {
+            let x = event.pageX,
+                y = event.pageY;
+            console.log("CLICK(" + x + ", " + y + ")");
+            lastClickTime = Date.now();
+            if(x > searchBoxStart && x < searchBoxEnd && y > 10 && y < 50) {
+                console.log("Search Box");
+                selected = "Search Box";
+            } else if((x > canvas.width-250 && x < canvas.width-20) &&
+                ((y > 10 && y < 50) || (selected === "Account Box" && y > 10 && y < 170))) {
+                console.log("Account Box");
+                selected = "Account Box";
+                if(y > 50 && y < 90) {
+                    console.log("Go To Account Settings");
+                } else if(y > 90 && y < 130) {
+                    console.log("Go To ????");
+                } else if(y > 130 && y < 170) {
+                    console.log("Go To Log Out");
+                }
+            } else {
+                console.log("null");
+                selected = null;
+            }
+        }, false);
+
+        document.addEventListener("keydown", function(event) {
+            if(event.key === "Backspace" && SearchboxContent.length > 0) {
+                SearchboxContent = SearchboxContent.slice(0, SearchboxContent.length-1);
+            } else {
+                if(event.key.length === 1) {
+                    SearchboxContent += event.key;
+                }
+            }
+        }, false);
+    }
+
+    function drawWebsite() {
+
+        // Containers
+
         drawSquare({x:0,y:0}, {x: canvas.width, y: canvas.height}, {hue: 0, sat: 0, lum: 100}, 1, -1); // Background
         drawSquare({x:0,y:0}, {x: canvas.width, y: canvas.height}, {hue: 0, sat: 0, lum: 0}, 1, 5); // Background
         drawSquare({x:0,y:0}, {x: canvas.width, y: 60}, {hue: 0, sat: 0, lum: 80}, 1, -1); // Top Banner
         drawSquare({x:0,y:0}, {x: canvas.width, y: 60}, {hue: 0, sat: 0, lum: 50}, 1, 5);
         drawText("Item Catalogue", 30, {hue: 0, sat: 0, lum: 30}, 20, 40);
-        let searchBoxStart = 350, searchBoxEnd = canvas.width-300, maxSearchBoxSize = 500;
-        if(searchBoxEnd - searchBoxStart > maxSearchBoxSize) { searchBoxEnd = searchBoxStart + maxSearchBoxSize; }
-        if(searchBoxStart + 150 < searchBoxEnd) { // Search box will not render if it's less than 150 pixels wide
-            drawSquare({x:searchBoxStart,y:10}, {x: searchBoxEnd, y: 50}, {hue: 0, sat: 0, lum: 90}, 1, -1); // Search Box
-            drawSquare({x:searchBoxStart,y:10}, {x: searchBoxEnd, y: 50}, {hue: 0, sat: 0, lum: 60}, 1, 5);
-            drawText("Search . . .", 30, {hue: 0, sat: 0, lum: 60}, searchBoxStart+20, 40);
-            if(selected == "Search Box") {
+        searchBoxStart = 350;
+        searchBoxEnd = canvas.width - 300;
+        maxSearchBoxSize = 500;
 
+        // Search Box
+
+        if(searchBoxEnd - searchBoxStart > maxSearchBoxSize) { searchBoxEnd = searchBoxStart + maxSearchBoxSize; } // Max search box size
+        if(searchBoxStart + 150 < searchBoxEnd) { // Minimum search box size
+            drawSquare({x:searchBoxStart,y:10}, {x: searchBoxEnd, y: 50}, {hue: 0, sat: 0, lum: 90}, 1, -1);
+            drawSquare({x:searchBoxStart,y:10}, {x: searchBoxEnd, y: 50}, {hue: 0, sat: 0, lum: 60}, 1, 5);
+            // Dynamic text and blinker
+            if(SearchboxContent === "") {
+                drawText("Search . . .", 30, {hue: 0, sat: 0, lum: 60}, searchBoxStart+20, 40);
+                if(selected === "Search Box" && Math.round((Date.now())/cursorBlink) % 2 === 0) {
+                    console.log("Search Box Anim");
+                    drawText("|", 30, {hue: 0, sat: 0, lum: 60}, searchBoxStart+15, 38);
+                }
+            } else {
+                let text = SearchboxContent;
+                if(selected === "Search Box" && Math.round((Date.now())/cursorBlink) % 2 === 0) {
+                    text += "|";
+                }
+                drawText(text, 30, {hue: 0, sat: 0, lum: 60}, searchBoxStart+20, 40);
             }
         }
-        drawSquare({x:canvas.width-250,y:10}, {x: canvas.width-20, y: 50}, {hue: 0, sat: 0, lum: 70}, 1, -1); // Account Box
+
+        // Account Box
+
+        drawSquare({x:canvas.width-250,y:10}, {x: canvas.width-20, y: 50}, {hue: 0, sat: 0, lum: 70}, 1, -1);
         drawSquare({x:canvas.width-250,y:10}, {x: canvas.width-20, y: 50}, {hue: 0, sat: 0, lum: 50}, 1, 5);
         drawText("Account Name", 30, {hue: 0, sat: 0, lum: 30}, canvas.width-230, 40);
+        if(selected === "Account Box") {
+            drawSquare({x:canvas.width-250,y:50}, {x: canvas.width-20, y: 90}, {hue: 0, sat: 0, lum: 85}, 1, -1);
+            drawSquare({x:canvas.width-250,y:50}, {x: canvas.width-20, y: 90}, {hue: 0, sat: 0, lum: 50}, 1, 5);
+            drawText("Account Settings", 30, {hue: 0, sat: 0, lum: 30}, canvas.width-230, 80);
+            drawSquare({x:canvas.width-250,y:90}, {x: canvas.width-20, y: 130}, {hue: 0, sat: 0, lum: 85}, 1, -1);
+            drawSquare({x:canvas.width-250,y:90}, {x: canvas.width-20, y: 130}, {hue: 0, sat: 0, lum: 50}, 1, 5);
+            drawText("????", 30, {hue: 0, sat: 0, lum: 30}, canvas.width-230, 120);
+            drawSquare({x:canvas.width-250,y:130}, {x: canvas.width-20, y: 170}, {hue: 0, sat: 0, lum: 85}, 1, -1);
+            drawSquare({x:canvas.width-250,y:130}, {x: canvas.width-20, y: 170}, {hue: 0, sat: 0, lum: 50}, 1, 5);
+            drawText("Log Out", 30, {hue: 0, sat: 0, lum: 30}, canvas.width-230, 160);
+        }
         /*for (let item of items) {
             document.write("<BR>" + item.Name + "<BR>");
             document.write("<img src=\"" + item.Images[0] + "\" alt=\"text\" width=\"200\" height=\"200\"><BR>");
@@ -60,16 +140,7 @@
             document.write("<BR>");
         }*/
 
-        // Add event listener for `click` events.
-        canvas.addEventListener('click', function(event) {
-            let x = event.pageX,
-                y = event.pageY;
-            console.log("CLICK(" + x + ", " + y + ")");
-            if(x > searchBoxStart && x < searchBoxEnd && y > 10 && y < 50) {
-                console.log("Search Box");
-                selected = "Search Box"
-            }
-        }, false);
+        setTimeout(() => { drawWebsite(); }, Math.ceil(1000/60)); // queues the next tick at an interval that is consistent with the framerate.
     }
 
     /**
@@ -109,7 +180,7 @@
      * @returns void
      */
     function drawPolygon(vertices, colour, opacity, strokeSize) {
-        console.log(vertices);
+        //console.log(vertices);
         context.beginPath();
         context.fillStyle = 'hsl('+ colour.hue + ',' + colour.sat + '%,' + colour.lum + '%)';
         context.globalAlpha = opacity;
