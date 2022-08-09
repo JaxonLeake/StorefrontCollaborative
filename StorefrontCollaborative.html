@@ -5,11 +5,20 @@
 <BODY>
 <SCRIPT LANGUAGE="JavaScript">
 
-    // System-wide variables
+    /**
+     * Main System
+     */
+
+    // Global Variables
+    let page;
     let items = [{Name:"ItemName1", Description:"ItemDescription1", Images:["Images\\1.png"], Price:10, Stock:3},
         {Name:"ItemName2", Description:"ItemDescription2", Images:["Images\\2.jpg"], Price:15, Stock:7}];
 
-    // Storage
+    /**
+     * Item Catalogue
+     */
+
+    // Global Variables
     let canvas;
     let context;
     let SearchboxContent = "";
@@ -27,19 +36,16 @@
      * Main function
      */
     function bigDog() {
-        itemManagement();
+        RunSignIn();
     }
 
-    function itemManagement() {
+    function RunItemCatalogue() {
         document.body.innerHTML = "";
+        page = "Item Catalogue"
         canvas = document.createElement('canvas');
         canvas.id = 'canvas';
-        canvas.width = window.innerWidth-50;
-        canvas.height = window.innerHeight-50;
-
-        document.body.appendChild(canvas); // adds the canvas to the body element
+        document.body.appendChild(canvas);
         context = canvas.getContext('2d');
-        drawWebsite();
         // Add event listener for `click` events.
         canvas.addEventListener('click', function(event) {
             let x = event.pageX,
@@ -54,19 +60,21 @@
                 console.log("Account Box");
                 selected = "Account Box";
                 if(y > 50 && y < 90) {
-                    console.log("Go To Account Settings");
+                    console.log("Opens Account Settings Page");
+                    RunAccountSettings();
                 } else if(y > 90 && y < 130) {
-                    console.log("Go To ????");
+                    console.log("Opens Placeholder Page");
+                    RunUnknown();
                 } else if(y > 130 && y < 170) {
-                    console.log("Go To Log Out");
+                    console.log("Opens Sign In Page");
+                    RunSignIn();
                 }
             } else {
                 console.log("null");
                 selected = null;
             }
         }, false);
-
-        document.addEventListener("keydown", function(event) {
+        canvas.addEventListener("keydown", function(event) {
             if(event.key === "Backspace" && SearchboxContent.length > 0) {
                 SearchboxContent = SearchboxContent.slice(0, SearchboxContent.length-1);
             } else {
@@ -75,11 +83,34 @@
                 }
             }
         }, false);
+
+        TickItemCatalogue();
     }
 
-    function drawWebsite() {
+    function RunAccountSettings() {
+        document.body.innerHTML = "";
+        page = "Account Settings";
+        document.write("Account Settings Page Placeholder");
+    }
+
+    function RunUnknown() {
+        document.body.innerHTML = "";
+        page = "Placeholder";
+        document.write("Placeholder Page Placeholder");
+    }
+
+    function RunSignIn() {
+        document.body.innerHTML = "";
+        page = "Sign In";
+        document.write("Sign In Page Placeholder");
+        setTimeout(() => { RunItemCatalogue(); }, 1000);
+    }
+
+    function TickItemCatalogue() {
 
         // Containers
+        canvas.width = window.innerWidth-15;
+        canvas.height = window.innerHeight-20;
 
         drawSquare({x:0,y:0}, {x: canvas.width, y: canvas.height}, {hue: 0, sat: 0, lum: 100}, 1, -1); // Background
         drawSquare({x:0,y:0}, {x: canvas.width, y: canvas.height}, {hue: 0, sat: 0, lum: 0}, 1, 5); // Background
@@ -123,24 +154,15 @@
             drawText("Account Settings", 30, {hue: 0, sat: 0, lum: 30}, canvas.width-230, 80);
             drawSquare({x:canvas.width-250,y:90}, {x: canvas.width-20, y: 130}, {hue: 0, sat: 0, lum: 85}, 1, -1);
             drawSquare({x:canvas.width-250,y:90}, {x: canvas.width-20, y: 130}, {hue: 0, sat: 0, lum: 50}, 1, 5);
-            drawText("????", 30, {hue: 0, sat: 0, lum: 30}, canvas.width-230, 120);
+            drawText("Placeholder", 30, {hue: 0, sat: 0, lum: 30}, canvas.width-230, 120);
             drawSquare({x:canvas.width-250,y:130}, {x: canvas.width-20, y: 170}, {hue: 0, sat: 0, lum: 85}, 1, -1);
             drawSquare({x:canvas.width-250,y:130}, {x: canvas.width-20, y: 170}, {hue: 0, sat: 0, lum: 50}, 1, 5);
             drawText("Log Out", 30, {hue: 0, sat: 0, lum: 30}, canvas.width-230, 160);
         }
-        /*for (let item of items) {
-            document.write("<BR>" + item.Name + "<BR>");
-            document.write("<img src=\"" + item.Images[0] + "\" alt=\"text\" width=\"200\" height=\"200\"><BR>");
-            document.write(item.Description + "<BR>");
-            document.write("$" + item.Price + " Each<BR>");
-            document.write(item.Stock + "x Remaining<BR>");
-            let button = document.createElement("button");
-            button.innerHTML = "Edit";
-            document.body.appendChild(button);
-            document.write("<BR>");
-        }*/
 
-        setTimeout(() => { drawWebsite(); }, Math.ceil(1000/60)); // queues the next tick at an interval that is consistent with the framerate.
+        if(page === "Item Catalogue") {
+            setTimeout(() => { TickItemCatalogue(); }, 1); // refresh the Item Catalogue Page constantly
+        }
     }
 
     /**
@@ -198,7 +220,6 @@
     }
 
     bigDog(); // Call the main function to start the program
-
 </SCRIPT>
 </BODY>
 </HTML>
