@@ -196,17 +196,18 @@
 
     function RunCart() {
 
-        // document.body.innerHTML = "";
-        // page = "Cart";
-        // document.write("Cart Page Placeholder");
+        document.body.innerHTML = "";
+        page = "Cart";
+        document.write("Cart Page Placeholder");
     }
 
     function RunBuyNow(item) {
         console.log(item.Name);
         console.log(item.Price);
-        console.log(item.Stock);
-        itemInCart.push = [item.Name,item.Price]
-        localStorage.setItem("test", JSON.stringify(itemInCart));
+        // console.log(item.Stock);
+        // itemInCart.push = [item.Name,item.Price]
+        // localStorage.setItem("test", JSON.stringify(itemInCart));
+        //sorry this cant work
 
         // document.body.innerHTML = "";
         // page = "BuyNowPage:" + item.Name;
