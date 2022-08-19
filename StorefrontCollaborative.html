@@ -139,10 +139,32 @@
         }
     }
 
-    function RunAccountSettings() {
-        document.body.innerHTML = "";
-        page = "Account Settings";
-        document.write("Account Settings Page Placeholder");
+    function RunAccountSettings(value) {
+    // password = prompt ("Enter your Password Again: ");
+    // while (password != accounts[value].password) {//while loop help user to enter again if their password are incorrect
+    //     console.log("Incorrect!! Enter your Password Again");
+    //     password = prompt ("Password: ");
+    // }
+    // var choice = prompt("What would you like to change? (username/password/deposit)")
+    // if (choice == "password"){
+    //     document.write("Old Password: "+password+"<br>");
+    //     accounts[value].password=prompt("New Password");
+    //     document.write("New password:  "+accounts[value].password+"<br>");
+    //     localStorage.setItem("password"+[value],accounts[value].password);}
+    // else if (choice == "username"){
+    //     document.write("Old username: "+accounts[value].username+"<br>");
+    //     accounts[value].username=prompt("New username");
+    //     document.write("New username:  "+accounts[value].username+"<br>");
+    //     localStorage.setItem("username"+[value],accounts[value].username);}
+    // else if (choice == deposit){
+    //     var getAmount = prompt("How much would you deposit?");
+    //     accounts[value].amount=accounts[value].amount+getAmount;
+    //     localStorage.setItem("amount"+[value],accounts[value].amount);}
+
+    document.body.innerHTML = "";
+    page = "Account Settings";
+    document.write("Account Settings Page Placeholder");
+    setTimeout(() => { RunItemCatalogue(); }, 1000);
     }
 
     function RunUnknown() {
@@ -153,6 +175,15 @@
 
     function RunSignIn() {
         document.body.innerHTML = "";
+        var username = prompt("Login:");
+        password = prompt ("Password:");
+        if (username == user[0].name && password == user[0].password){summary()} //send the admin into summary
+        else
+            for (let i = 1; i < user.length; i++) {//by using loop with two condition, it help the user can access they owns account even have the same username but different password
+                if (username==user[i].name){
+                    if (password == user[i].password){choice(i);}//in order to sort the desire user by using passing parameter
+                }
+        };
         page = "Sign In";
         document.write("Sign In Page Placeholder");
         setTimeout(() => { RunItemCatalogue(); }, 1000);
