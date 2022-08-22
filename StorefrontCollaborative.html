@@ -13,9 +13,10 @@
     let page;
     
     let itemInCart = [];
-    //Accounts[{Username:”String”,Password:”String”,Amount: “integer” ,Cart:[{Item, Quantity},{Item, Quantity},{Item, Quantity}]}
+    //Account[{Username:”String”,Password:”String”,Amount: “integer” ,Cart:[{Item, Quantity},{Item, Quantity},{Item, Quantity}]}
     let account = 
-    [{username: localStorage.getItem("username1")||"A", password: localStorage.getItem("password1")||"AA", amount: 100, cart :[]},
+    [{username: "Admin", password: "admin"},
+    {username: localStorage.getItem("username1")||"A", password: localStorage.getItem("password1")||"AA", amount: 100, cart :[]},
     {username: localStorage.getItem("username2")||"B", password: localStorage.getItem("password2")||"BB", amount: 100, cart :[]},
     {username: localStorage.getItem("username3")||"C", password: localStorage.getItem("password3")||"CC", amount: 100, cart :[]}];
     //item = [{Name:”String”, Description:”String”, Price:”Integer”, Stock:”Integer”}];
@@ -181,18 +182,51 @@
     function RunSignIn() {
         document.body.innerHTML = "";
         var username = prompt("Login:");
-        password = prompt ("Password:");
-        if (username == user[0].name && password == user[0].password){summary()} //send the admin into summary
+        var password = prompt ("Password:");
+        if (username == account[0].username && password == account[0].password){adminToolPage()} //send the admin into globalAccountManagemen
         else
-            for (let i = 1; i < user.length; i++) {//by using loop with two condition, it help the user can access they owns account even have the same username but different password
-                if (username==user[i].name){
-                    if (password == user[i].password){choice(i);}//in order to sort the desire user by using passing parameter
-                }
-        };
-        page = "Sign In";
+        //     for (let i = 1; i < user.length; i++) {//by using loop with two condition, it help the user can access they owns account even have the same username but different password
+        //         if (username==user[i].name){
+        //             if (password == user[i].password){choice(i);}//in order to sort the desire user by using passing parameter
+        //         }
+        // };
+        {page = "Sign In";
         document.write("Sign In Page Placeholder");
-        setTimeout(() => { RunItemCatalogue(); }, 1000);
+        setTimeout(() => { RunItemCatalogue(); }, 1000);}
     }
+
+
+    function adminToolPage() {
+        var option = prompt("Option")
+        switch (option) {
+            case "global account management":
+                    globalAccountManagement()
+                break;
+            case "item management":
+                    itemManagement()
+                break;        
+            default:
+                document.body.innerHTML = "";
+                page = "adminToolPage";
+                document.write("adminToolPage");    
+                break;
+        }
+
+    
+    }
+
+    function globalAccountManagement() {
+        document.body.innerHTML = "";
+        page = "globalAccountManagement";
+        document.write("globalAccountManagement");        
+    }
+
+    function itemManagement() {
+        document.body.innerHTML = "";
+        page = "itemManagement";
+        document.write("itemManagement");        
+    }
+
 
     function RunCart() {
 
