@@ -153,7 +153,7 @@
     }
 
     function adminToolPage() {
-        var option = prompt("Option")
+        let option = prompt("Option")
         switch (option) {
             case "globalAccount":
                     globalAccountManagement()
@@ -172,7 +172,7 @@
 
     function globalAccountManagement() {
         document.body.innerHTML = "";
-        console.log(account.find(x => x.Name === 'Anna'));
+        console.log(Account.find(x => x.Name === 'Anna'));
 
 
         page = "globalAccountManagement";
