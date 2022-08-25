@@ -363,8 +363,8 @@
         }
     }
 
-    function RunAccountSettings() {
-        document.body.innerHTML = "";
+    function RunAccountSettings() {//Change detail of account by using username
+        // document.body.innerHTML = "";
         let accountFind=UsernameInp;
         let obj = account.find((o, i) => {
         if (o.Name === accountFind) {
@@ -406,6 +406,94 @@
         document.write("Placeholder Page Placeholder");
     }
 
+
+
+//***********************************************************************
+    function AdminAccountCatalogue() {
+        document.body.innerHTML = "";
+        page = "Admin Account Page"
+        canvas = document.createElement('canvas');
+        canvas.width = window.innerWidth - 30;
+        canvas.width = window.innerHeight - 15;
+        document.body.appendChild(canvas);
+        context = canvas.getContext('2d');
+        // Add event listener for `click` events.
+        canvas.addEventListener('click', function(event) {
+            let x = event.pageX,
+                y = event.pageY;
+            console.log("CLICK(" + x + ", " + y + ")");
+            lastClickTime = Date.now();
+            if(x > searchBoxStart && x < searchBoxEnd-40 && y > 10 && y < 50) {
+                selected = "Search Box";
+            } else if(x > searchBoxEnd-40 && x < searchBoxEnd && y > 10 && y < 50) {
+                selected = "Enter Search Box";
+                query = SearchboxContent;
+                GetFilteredItems();
+            } else if((x > canvas.width-380 && x < canvas.width-50) &&((y > 10 && y < 50) ||(selected === "Admin" && y > 10 && y < 170))) {
+                selected = "Admin";
+                if(y > 50 && y < 90) {
+                    selected = "addItem";
+                    addItem();
+                } else if(y > 90 && y < 130) {
+                    selected = "AdminItemCatalogue";
+                    AdminItemCatalogue();
+                } else if(y > 130 && y < 170) {
+                    selected = "RunSignIn";
+                    LogIn();
+                }
+            } else {
+                selected = null;
+                //Check if buy now buttons were pressed
+                for(let itemButton of buyNowButtons) {
+                    if(x > itemButton.d1.x && x < itemButton.d2.x) {
+                        if(y > itemButton.d1.y && y < itemButton.d2.y) {
+                            selected = itemButton.name;
+                            editItem(selected);
+                        }
+                    }
+                }
+            }
+            console.log(selected);
+        }, false);
+        document.addEventListener("keydown", function(event) {
+            if(selected !== "Search Box") {
+                return;
+            }
+            if(event.key === "Backspace" && SearchboxContent.length > 0) {
+                SearchboxContent = SearchboxContent.slice(0, SearchboxContent.length-1);
+            } else {
+                if(event.key.length === 1) {
+                    SearchboxContent += event.key;
+                }
+            }
+        }, false);
+        AdminTickAccountCatalogue();
+    }
+
+
+
+
+    function AdminTickAccountCatalogue() {
+        // Containers
+        canvas.width = window.innerWidth - 30;
+        let xBorder = 20, yBorder = 20;
+        let length = 400, width = 300;
+        let hMax = Math.floor((canvas.width-xBorder) / (width+xBorder));
+        xBorder += ((canvas.width - width*hMax) / (hMax + 1)) - 20;
+        canvas.height = 60 + yBorder  +  (length + yBorder) * Math.ceil(items.length / hMax);
+
+        drawSquare({x:0,y:0}, {x: canvas.width, y: canvas.height}, {hue: 0, sat: 0, lum: 100}, 1, -1); // Background
+        drawSquare({x:0,y:0}, {x: canvas.width, y: canvas.height}, {hue: 0, sat: 0, lum: 0}, 1, 5); // Background
+
+        AdminTickBanner();
+        // refresh the Item Catalogue Page constantly
+        if(page === "Admin Account Page") {
+            setTimeout(() => { AdminTickAccountCatalogue(); }, 1);
+        }
+    }
+
+//***********************************************************************
+    
     function AdminItemCatalogue() {
         document.body.innerHTML = "";
         page = "Admin Page"
@@ -432,8 +520,9 @@
                     selected = "addItem";
                     addItem();
                 } else if(y > 90 && y < 130) {
-                    selected = "editAccount";
-                    editAccount();
+                    selected = "AdminAccountCatalogue";
+                    // editAccount();
+                    AdminAccountCatalogue();
                 } else if(y > 130 && y < 170) {
                     selected = "RunSignIn";
                     LogIn();
@@ -523,7 +612,7 @@
     function AdminTickBanner() {
         drawSquare({x:0,y:0}, {x: canvas.width, y: 60}, {hue: 0, sat: 0, lum: 80}, 1, -1); // Top Banner
         drawSquare({x:0,y:0}, {x: canvas.width, y: 60}, {hue: 0, sat: 0, lum: 50}, 1, 5);
-        drawText("Item Catalogue", 30, {hue: 0, sat: 0, lum: 30}, 20, 40);
+        drawText("Admin Page", 30, {hue: 0, sat: 0, lum: 30}, 20, 40);
 
         // Search Box
         searchBoxStart = 250;
@@ -565,7 +654,7 @@
             drawText("Add New Item", 30, {hue: 0, sat: 0, lum: 30}, canvas.width-360, 80);
             drawSquare({x:canvas.width-380,y:90}, {x: canvas.width-50, y: 130}, {hue: 0, sat: 0, lum: 85}, 1, -1);
             drawSquare({x:canvas.width-380,y:90}, {x: canvas.width-50, y: 130}, {hue: 0, sat: 0, lum: 50}, 1, 5);
-            drawText("Edit Accounts", 30, {hue: 0, sat: 0, lum: 30}, canvas.width-360, 120);
+            drawText("Edit Accounts/Items", 30, {hue: 0, sat: 0, lum: 30}, canvas.width-360, 120);
             drawSquare({x:canvas.width-380,y:130}, {x: canvas.width-50, y: 170}, {hue: 0, sat: 0, lum: 85}, 1, -1);
             drawSquare({x:canvas.width-380,y:130}, {x: canvas.width-50, y: 170}, {hue: 0, sat: 0, lum: 50}, 1, 5);
             drawText("Log Out", 30, {hue: 0, sat: 0, lum: 30}, canvas.width-360, 160);
@@ -622,7 +711,7 @@
         // LogIn();
     }
 
-    function editAccount() {
+    function editAccount() {//currently try to match up with the button
         document.body.innerHTML = "";
         let accountFind=prompt("Write Exactly Account you want to change")
         let obj = Account.find((o, i) => {
@@ -656,7 +745,7 @@
         console.log(Account);
         LogIn();
     }
-
+// *****************************************************
 
     function RunCart() {
         document.body.innerHTML = "";
