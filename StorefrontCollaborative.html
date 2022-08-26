@@ -68,22 +68,22 @@
         First = localStorage.getItem("First");
 
         if(First === "false"){ // Hence, if the variable first doesn't meet the requirement, it will run loadPreset
-            accountLength = localStorage.getItem("AL"); // Retrieving the Account Length from local storage
-            Account = new Array(accountLength)
-            console.log(accountLength)
-            for(let n = 0; n < accountLength; n++) // This for loop allows for existing arrays in local storage to be parsed into an array usable by the computer
-            {Account[n] = JSON.parse(localStorage.getItem("Account" + n));}
+            // accountLength = localStorage.getItem("AL"); // Retrieving the Account Length from local storage
+            // Account = new Array(accountLength)
+            // console.log(accountLength)
+            // // for(let n = 0; n < accountLength; n++) // This for loop allows for existing arrays in local storage to be parsed into an array usable by the computer
+            // {Account[n] = JSON.parse(localStorage.getItem("Account" + n));}
 
             // itemLength = localStorage.getItem("IL"); // Retrieving the Item Length from local storage
             // items = new Array(itemLength)
             // for(let n = 0; n < itemLength; n++) // Similarly, this for loop retrieves all existing items from local storage to be parsed for use
             // {items[n] = JSON.parse(localStorage.getItem("Item" + n));}
-
-            items = JSON.parse(localStorage.getItem("ItemList"))
-            console.log(items)
+            Account = JSON.parse(localStorage.getItem("StudentList"));
+            console.log(Account);
+            items = JSON.parse(localStorage.getItem("ItemList"));
+            console.log(items); 
         }
         else{loadPreset();} /* As said, runs function when the if statement isn't met */
-        console.log(Account);//to know what was happening in Account
         GetFilteredItems();
     }
 
@@ -164,6 +164,7 @@
         let UsernameInpSI = document.getElementById("text1").value; /*As mentioned before, this collects the input of textoxes based on ID*/
         let PasswordInpSI = document.getElementById("text2").value;
 
+        console.log(Account[0].Username);
         if(Account[0].Username === UsernameInpSI)
             {
                 if(Account[0].Password === PasswordInpSI)
@@ -235,9 +236,11 @@
             }
         alert("Your password is " + Account[0].Password);
 
-        localStorage.setItem("Account"+0, JSON.stringify(Account[0])); /*Sets the admin account into local storage*/
-        accountLength++;
-        localStorage.setItem("AL", accountLength); /*The Account length must be consistently updated so that new accounts don't write over existing ones*/
+        localStorage.setItem('StudentList', JSON.stringify(Account))
+
+        // localStorage.setItem("Account"+0, JSON.stringify(Account[0])); /*Sets the admin account into local storage*/
+        // accountLength++;
+        // localStorage.setItem("AL", accountLength); /*The Account length must be consistently updated so that new accounts don't write over existing ones*/
         LogIn()
     }
 
@@ -246,8 +249,10 @@
 
         UsernameInp=document.getElementById("text1").value; /*These lines store inputted data within sign up textboxes based on ID*/
         PasswordInp=document.getElementById("text2").value;
-
-        Account[accountLength]= /*This array of objects structure has a mix of inputs, with alreayd prompted values and prompts within the object*/
+        let newSignUp = []
+        if((UsernameInp!= "") && (PasswordInp!=""))
+        {
+            let AccountSignup = newSignUp[Account.length]= /*This array of objects structure has a mix of inputs, with alreayd prompted values and prompts within the object*/
             {
                 Username: UsernameInp,
                 Password: PasswordInp,
@@ -264,13 +269,24 @@
 
         alert("Your account has been successfully created");
         alert("Please proceed to the login page");
-        for(let n = 0; n < Account.length; n++) /*This for loop updates all current accounts made into local storage*/
-        {
-            localStorage.setItem("Account" + n, JSON.stringify(Account[n]));
-        }
-        accountLength++; /*The account length must be increased otherwise when a new account is made, it will override the previous one*/
-        localStorage.setItem("AL", accountLength); /*Updates it for the same reason as above*/
+        Account.push(AccountSignup);
+        localStorage.setItem('StudentList', JSON.stringify(Account));
+        console.log(Account);
         LogIn()
+        }
+        else if((UsernameInp=="")||(PasswordInp==""))
+        {
+            alert("No Username or Password has been inputted")
+            LogIn()
+        }
+
+        // for(let n = 0; n < Account.length; n++) /*This for loop updates all current accounts made into local storage*/
+        // {
+        //     localStorage.setItem("Account" + n, JSON.stringify(Account[n]));
+        // }
+        // accountLength++; /*The account length must be increased otherwise when a new account is made, it will override the previous one*/
+        // localStorage.setItem("AL", accountLength); /*Updates it for the same reason as above*/
+        // LogIn()
 
     }
 
@@ -366,24 +382,24 @@
     function RunAccountSettings() {//Change detail of account by using username
         // document.body.innerHTML = "";
         let accountFind=UsernameInp;
-        let obj = account.find((o, i) => {
+        let obj = Account.find((o, i) => {
         if (o.Name === accountFind) {
             changeDetail=prompt("Username/Password/Firstname/Surname/Connect")
             switch (changeDetail) {
                 case "Username":
-                account[i].Username =prompt("Name");
+                Account[i+1].Username =prompt("Name");
                 break;
                 case "Password":
-                account[i].Password= prompt("Password");
+                Account[i+1].Password= prompt("Password");
                 break;
                 case "Firstname":
-                account[i].Firstname= parseInt(prompt("Firstname"));
+                Account[i+1].Firstname= parseInt(prompt("Firstname"));
                 break;
                 case "Surname":
-                account[i].Surname = parseInt(prompt("Surname"));
+                Account[i+1].Surname = parseInt(prompt("Surname"));
                 break;    
                 case "Connect":
-                account[i].Connect = parseInt(prompt("Connect"));
+                Account[i+1].Connect = parseInt(prompt("Connect"));
                 break;   
                 default:
                 break;
@@ -392,8 +408,8 @@
             }
         });
         // https://stackoverflow.com/questions/12462318/find-a-value-in-an-array-of-objects-in-javascript
-        localStorage.setItem('StudentList', JSON.stringify(account) );
-        console.log(account);
+        localStorage.setItem('StudentList', JSON.stringify(Account) );
+        console.log(Account);
         // LogIn();
 
         // page = "Account Settings";
@@ -939,7 +955,7 @@
                 //Image
                 drawSquare({x:containerLeft+20,y:containerTop+20}, {x: containerRight-20, y: containerBottom-120}, {hue: 0, sat: 0, lum: 95}, 1, -1);
                 let itemImage = new Image();
-                itemImage.src = internalFilteredItems[itemIterator].Images[0];
+                // itemImage.src = internalFilteredItems[itemIterator].Images[0];
                 context.drawImage(itemImage, (containerLeft+20), (containerTop+20), 260, 260);
                 drawSquare({x: containerLeft+20,y: containerTop+20}, {x: containerRight-20, y: containerBottom-120}, {hue: 0, sat: 0, lum: 50}, 1, 5);
                 //Button
@@ -1021,7 +1037,7 @@
     }
 
     bigDog(); // Call the main function to start the program
-    // var _lsTotal=0,_xLen,_x;for(_x in localStorage){ if(!localStorage.hasOwnProperty(_x)){continue;} _xLen= ((localStorage[_x].length + _x.length)* 2);_lsTotal+=_xLen; console.log(_x.substr(0,50)+" = "+ (_xLen/1024).toFixed(2)+" KB")};console.log("Total = " + (_lsTotal / 1024).toFixed(2) + " KB");
+    var _lsTotal=0,_xLen,_x;for(_x in localStorage){ if(!localStorage.hasOwnProperty(_x)){continue;} _xLen= ((localStorage[_x].length + _x.length)* 2);_lsTotal+=_xLen; console.log(_x.substr(0,50)+" = "+ (_xLen/1024).toFixed(2)+" KB")};console.log("Total = " + (_lsTotal / 1024).toFixed(2) + " KB");
     //checking the limitation of localStorage
 </SCRIPT>
 </BODY>
