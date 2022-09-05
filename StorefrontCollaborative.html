@@ -41,7 +41,7 @@
     let AccountNum;
 
     let UsernameInpSI;//this should be global for runAccountSetting()
-
+    let internalFilteredAccount = [];
     /**
      * Main function
      */
@@ -348,23 +348,31 @@
         let accountFind=localStorage.getItem('Login');
         let obj = Account.find((o, i) => {
         if (o.Username === accountFind) {
-            changeDetail=prompt("Username/Password/Firstname/Surname/Connect")
+            changeDetail=prompt("What would you like to change? (Username/Password/Firstname/Surname/Connect/Amount)")
             switch (changeDetail) {
                 case "Username":
-                    Account[i].Username =prompt("Name");
+                    Account[i].Username =prompt("Write new Name");
                 break;
                 case "Password":
-                    Account[i].Password= prompt("Password");
+                    Account[i].Password= prompt("Write new Password");
                 break;
                 case "Firstname":
-                    Account[i].Firstname= prompt("Firstname");
+                    Account[i].Firstname= prompt("Write new Firstname");
                 break;
                 case "Surname":
-                    Account[i].Surname = prompt("Surname");
+                    Account[i].Surname = prompt("Write new Surname");
                 break;   
                 case "Connect":
-                    Account[i].Connect = prompt("Connect");
-                break;   
+                    Account[i].Connect = prompt("Write new Connect");
+                break;
+                case "Amount":
+                    let amount = parseInt(prompt("Adding Amount"));
+                    if (amount >=0) {
+                        Account[i].Amount=Account[i].Amount+amount
+                    } else {
+                        alert("Please Try Again...");
+                    }
+                break; 
                 default:
                 break;
             }
@@ -382,10 +390,7 @@
         document.write("Placeholder Page Placeholder");
     }
 
-
-
-//***********************************************************************
-    function AdminAccountCatalogue() {
+    function AdminAccountCatalogue() {//currently fixing
         document.body.innerHTML = "";
         page = "Admin Account Page"
         canvas = document.createElement('canvas');
@@ -419,18 +424,19 @@
                 }
             } else {
                 selected = null;
-                //Check if buy now buttons were pressed
+                // Check if buy now buttons were pressed
                 for(let itemButton of buyNowButtons) {
                     if(x > itemButton.d1.x && x < itemButton.d2.x) {
                         if(y > itemButton.d1.y && y < itemButton.d2.y) {
                             selected = itemButton.name;
-                            editItem(selected);
+                            editAccount(getAccountByName(selected));
                         }
                     }
                 }
             }
             console.log(selected);
         }, false);
+        AdminTickAccountCatalogue();
         document.addEventListener("keydown", function(event) {
             if(selected !== "Search Box") {
                 return;
@@ -443,10 +449,10 @@
                 }
             }
         }, false);
-        AdminTickAccountCatalogue();
+        
     }
 
-    function AdminTickAccountCatalogue() {
+    function AdminTickAccountCatalogue() {//currently fixing
         // Containers
         canvas.width = window.innerWidth - 30;
         let xBorder = 20, yBorder = 20;
@@ -464,8 +470,6 @@
             setTimeout(() => { AdminTickAccountCatalogue(); }, 1);
         }
     }
-
-//***********************************************************************
     
     function AdminItemCatalogue() {
         document.body.innerHTML = "";
@@ -494,8 +498,8 @@
                     addItem();
                 } else if(y > 90 && y < 130) {
                     selected = "AdminAccountCatalogue";
-                    // editAccount();
-                    AdminAccountCatalogue();
+                    editAccount();//select the account to change
+                    // AdminAccountCatalogue();
                 } else if(y > 130 && y < 170) {
                     selected = "RunSignIn";
                     LogIn();
@@ -542,7 +546,6 @@
         drawSquare({x:0,y:0}, {x: canvas.width, y: canvas.height}, {hue: 0, sat: 0, lum: 0}, 1, 5); // Background
 
 
-
         // Add Actual Items and Stuff
         let buyNowButtonSetter = [];
         let itemIterator = 0;
@@ -561,7 +564,7 @@
                 //Image
                 drawSquare({x:containerLeft+20,y:containerTop+20}, {x: containerRight-20, y: containerBottom-120}, {hue: 0, sat: 0, lum: 95}, 1, -1);
                 let itemImage = new Image();
-                // itemImage.src = internalFilteredItems[itemIterator].Images[0];
+                itemImage.src = internalFilteredItems[itemIterator].Images[0];
                 context.drawImage(itemImage, (containerLeft+20), (containerTop+20), 260, 260);
                 drawSquare({x: containerLeft+20,y: containerTop+20}, {x: containerRight-20, y: containerBottom-120}, {hue: 0, sat: 0, lum: 50}, 1, 5);
                 //Button
@@ -653,24 +656,23 @@
     }
 
     function editItem(params) {
-        // document.body.innerHTML = "";
         console.log(params);
         let itemfind=params;
         let obj = items.find((o, i) => {
         if (o.Name === itemfind) {
-            changeDetail=prompt("Name/Description/Price/Stock")
+            changeDetail=prompt("What would you like to change? (Name/Description/Price/Stock)")
             switch (changeDetail) {
                 case "Name":
-                items[i].Name =prompt("Name");
+                items[i].Name =prompt("Write new Name");
                 break;
                 case "Description":
-                items[i].Description= prompt("Description");
+                items[i].Description= prompt("Write new Description");
                 break;
                 case "Price":
-                items[i].Price= parseInt(prompt("price"));
+                items[i].Price= parseInt(prompt("Write new price"));
                 break;
                 case "Stock":
-                items[i].Stock = parseInt(prompt("stock"));
+                items[i].Stock = parseInt(prompt("Write new stock"));
                 break;    
                 default:
                 break;
@@ -684,27 +686,27 @@
         // LogIn();
     }
 
-    function editAccount() {//currently try to match up with the button
-        document.body.innerHTML = "";
-        let accountFind=prompt("Write Exactly Account you want to change")
+    function editAccount() {
+        // document.body.innerHTML = "";
+        let accountFind=prompt("Write Exactly Account you want to change (Username)")
         let obj = Account.find((o, i) => {
         if (o.Username === accountFind) {
-            changeDetail=prompt("Username/Password/Firstname/Surname/Connect")
+            changeDetail=prompt("What would you like to change? (Username/Password/Firstname/Surname/Connect)")
             switch (changeDetail) {
                 case "Username":
-                    Account[i].Username =prompt("Name");
+                    Account[i].Username =prompt("Write new Name");
                 break;
                 case "Password":
-                    Account[i].Password= prompt("Password");
+                    Account[i].Password= prompt("Write new Password");
                 break;
                 case "Firstname":
-                    Account[i].Firstname= prompt("Firstname");
+                    Account[i].Firstname= prompt("Write new Firstname");
                 break;
                 case "Surname":
-                    Account[i].Surname = prompt("Surname");
+                    Account[i].Surname = prompt("Write new Surname");
                 break;   
                 case "Connect":
-                    Account[i].Connect = prompt("Connect");
+                    Account[i].Connect = prompt("Write new Connect");
                 break;   
                 default:
                 break;
@@ -716,9 +718,7 @@
         // https://stackoverflow.com/questions/12462318/find-a-value-in-an-array-of-objects-in-javascript
         localStorage.setItem('AccountList', JSON.stringify(Account) );
         console.log(Account);
-        LogIn();
     }
-// *****************************************************
 
     function RunCart() {
         document.body.innerHTML = "";
