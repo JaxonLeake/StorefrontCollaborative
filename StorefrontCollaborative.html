@@ -32,7 +32,7 @@
     let lastClickTime = Date.now();
 
     // Josh Globals
-    let Account = [];//{Username: '', Password: '', Firstname: '', Surname: '', Connect: ''}
+    let Account = [];//{Username: '', Password: '', Firstname: '', Surname: '', Connect: '', Cart: [{name: '', quantity: ''}, {name: '', quantity: ''}]}
     let Item; /*This array of objects stores all the relevant details for items, for the preset, and for items to be added*/
 
     let accountLength; /* Account Length */
@@ -56,7 +56,19 @@
 
     function Initialise() /*Not sure if it's necessary, but it was in the structure chart, so I thought why not*/
     {
-        loadData()
+        loadData();
+        document.addEventListener("keydown", function(event) {
+            if(selected !== "Search Box") {
+                return;
+            }
+            if(event.key === "Backspace" && SearchboxContent.length > 0) {
+                SearchboxContent = SearchboxContent.slice(0, SearchboxContent.length-1);
+            } else {
+                if(event.key.length === 1) {
+                    SearchboxContent += event.key;
+                }
+            }
+        }, false);
     }
 
     function loadData() // This function runs to retrieve all necessary data from local storage
@@ -136,9 +148,7 @@
 
     }
 
-    function SignIn()
-    {
-
+    function SignIn() {
         let UsernameInpSI = document.getElementById("text1").value; /*As mentioned before, this collects the input of textoxes based on ID*/
         let PasswordInpSI = document.getElementById("text2").value;
         localStorage.setItem('Login',UsernameInpSI);console.log(UsernameInpSI);//STORE Input to easily to make change
@@ -224,9 +234,10 @@
                 Firstname: prompt("What is your first name?"),
                 Surname: prompt("What is your surname?"),
                 Connect: prompt("What is your connect class?"),
-                Amount: 100
+                Amount: 100,
+                Cart: []
             }
-        console.log(Account[0]); /*console.log is a compelx debugging tool, used for storing data of variables to be checked*/
+        console.log(Account[0]); /*console.log is a complex debugging tool, used for storing data of variables to be checked*/
         console.log(Account[1]);
         console.log(Account[2]);
         console.log(Account[3]);
@@ -235,7 +246,7 @@
         alert("Your account has been successfully created");
         alert("Please proceed to the login page");
         Account.push(AccountSignup);
-        localStorage.setItem('StudentList', JSON.stringify(Account));
+            saveAccounts();
         console.log(Account);
         LogIn()
         }
@@ -253,6 +264,10 @@
         // localStorage.setItem("AL", accountLength); /*Updates it for the same reason as above*/
         // LogIn()
 
+    }
+
+    function saveAccounts() {
+        localStorage.setItem('StudentList', JSON.stringify(Account));
     }
 
     function addToCart(item, quantity) {
@@ -273,30 +288,8 @@
                 y = event.pageY;
             console.log("CLICK(" + x + ", " + y + ")");
             lastClickTime = Date.now();
-            if(x > searchBoxStart && x < searchBoxEnd-40 && y > 10 && y < 50) {
-                selected = "Search Box";
-            } else if(x > searchBoxEnd-40 && x < searchBoxEnd && y > 10 && y < 50) {
-                selected = "Enter Search Box";
-                query = SearchboxContent;
-                GetFilteredItems();
-            } else if((x > canvas.width-380 && x < canvas.width-150) &&
-                ((y > 10 && y < 50) || (selected === "Account Box" && y > 10 && y < 170))) {
-                selected = "Account Box";
-                if(y > 50 && y < 90) {
-                    selected = "Account Settings";
-                    RunAccountSettings();
-                } else if(y > 90 && y < 130) {
-                    selected = "Placeholder";
-                    RunUnknown();
-                } else if(y > 130 && y < 170) {
-                    selected = "Sign In";
-                    LogIn();
-                }
-            } else if(x > canvas.width-130 && x < canvas.width-20 && y > 10 && y < 50) {
-                selected = "Cart";
-                RunCart();
-            } else {
-                selected = null;
+            selected = getBannerClick(x, y);
+            if(selected == null) {
                 //Check if buy now buttons were pressed
                 for(let itemButton of buyNowButtons) {
                     if(x > itemButton.d1.x && x < itemButton.d2.x) {
@@ -309,19 +302,35 @@
             }
             console.log(selected);
         }, false);
-        document.addEventListener("keydown", function(event) {
-            if(selected !== "Search Box") {
-                return;
-            }
-            if(event.key === "Backspace" && SearchboxContent.length > 0) {
-                SearchboxContent = SearchboxContent.slice(0, SearchboxContent.length-1);
-            } else {
-                if(event.key.length === 1) {
-                    SearchboxContent += event.key;
-                }
-            }
-        }, false);
         TickItemCatalogue();
+    }
+
+    function getBannerClick(x, y) {
+        if(x > searchBoxStart && x < searchBoxEnd-40 && y > 10 && y < 50) {
+            return "Search Box";
+        } else if(x > searchBoxEnd-40 && x < searchBoxEnd && y > 10 && y < 50) {
+            query = SearchboxContent;
+            GetFilteredItems();
+            RunItemCatalogue();
+            return "Enter Search Box";
+        } else if((x > canvas.width-380 && x < canvas.width-150) &&
+            ((y > 10 && y < 50) || (selected === "Account Box" && y > 10 && y < 170))) {
+            if(y > 50 && y < 90) {
+                RunAccountSettings();
+                return "Account Settings";
+            } else if(y > 90 && y < 130) {
+                RunUnknown();
+                return "Placeholder";
+            } else if(y > 130 && y < 170) {
+                LogIn();
+                return "Sign In";
+            } else {
+                return "Account Box";
+            }
+        } else if(x > canvas.width-130 && x < canvas.width-20 && y > 10 && y < 50) {
+            RunCart();
+            return "Cart";
+        }
     }
 
     function getItemByName(getItem) {
@@ -390,7 +399,7 @@
         document.write("Placeholder Page Placeholder");
     }
 
-    function AdminAccountCatalogue() {//currently fixing
+    function AdminAccountCatalogue() {
         document.body.innerHTML = "";
         page = "Admin Account Page"
         canvas = document.createElement('canvas');
@@ -452,7 +461,7 @@
         
     }
 
-    function AdminTickAccountCatalogue() {//currently fixing
+    function AdminTickAccountCatalogue() {
         // Containers
         canvas.width = window.innerWidth - 30;
         let xBorder = 20, yBorder = 20;
@@ -463,6 +472,13 @@
 
         drawSquare({x:0,y:0}, {x: canvas.width, y: canvas.height}, {hue: 0, sat: 0, lum: 100}, 1, -1); // Background
         drawSquare({x:0,y:0}, {x: canvas.width, y: canvas.height}, {hue: 0, sat: 0, lum: 0}, 1, 5); // Background
+
+
+        for(let i = 0; i<Account.length; i++) {
+            drawSquare({x: 40,y:100 + i*140}, {x: canvas.width-40, y: 200 + i*140}, {hue: 0, sat: 0, lum: 80}, 1, -1);
+            drawSquare({x: 40,y:100 + i*140}, {x: canvas.width-40, y: 200 + i*140}, {hue: 0, sat: 0, lum: 50}, 1, 5);
+            drawText(Account[i].Username, 80, {hue: 0, sat: 0, lum: 30}, 50, 180 + i*140);
+        }
 
         AdminTickBanner();
         // refresh the Item Catalogue Page constantly
@@ -498,8 +514,8 @@
                     addItem();
                 } else if(y > 90 && y < 130) {
                     selected = "AdminAccountCatalogue";
-                    editAccount();//select the account to change
-                    // AdminAccountCatalogue();
+                    // editAccount();//select the account to change
+                    AdminAccountCatalogue();
                 } else if(y > 130 && y < 170) {
                     selected = "RunSignIn";
                     LogIn();
@@ -715,21 +731,13 @@
             return true; // stop searching
             }
         });
-        // https://stackoverflow.com/questions/12462318/find-a-value-in-an-array-of-objects-in-javascript
         localStorage.setItem('AccountList', JSON.stringify(Account) );
         console.log(Account);
     }
 
     function RunCart() {
         document.body.innerHTML = "";
-        page = "Cart";
-        document.write("Cart Page Placeholder");
-    }
-
-    function RunBuyNow(buyNowItem) {
-        document.body.innerHTML = "";
-        page = "BuyNowPage";
-        //document.write(buyNowItem.Name + " Buy Now Page Placeholder");
+        page = "CartPage";
 
         canvas = document.createElement('canvas');
         canvas.width = window.innerWidth - 30;
@@ -743,36 +751,65 @@
                 y = event.pageY;
             console.log("CLICK(" + x + ", " + y + ")");
             lastClickTime = Date.now();
-            if(x > searchBoxStart && x < searchBoxEnd-40 && y > 10 && y < 50) {
-                selected = "Search Box";
-            } else if(x > searchBoxEnd-40 && x < searchBoxEnd && y > 10 && y < 50) {
-                selected = "Enter Search Box";
-                query = SearchboxContent;
-                GetFilteredItems();
-                RunItemCatalogue();
-            } else if((x > canvas.width-380 && x < canvas.width-150) &&
-                ((y > 10 && y < 50) || (selected === "Account Box" && y > 10 && y < 170))) {
-                selected = "Account Box";
-                if(y > 50 && y < 90) {
-                    selected = "Account Settings";
-                    RunAccountSettings();
-                } else if(y > 90 && y < 130) {
-                    selected = "Placeholder";
-                    RunUnknown();
-                } else if(y > 130 && y < 170) {
-                    selected = "Sign In";
-                    LogIn();
+            selected = getBannerClick(x, y);
+            if(selected == null) {
+                //Page Specific Buttons
+            }
+            console.log(selected);
+        }, false);
+        TickCart();
+    }
+
+
+    function TickCart() {
+        // Containers
+        canvas.width = window.innerWidth - 30;
+        canvas.height = window.innerHeight - 30;
+
+        drawSquare({x:0,y:0}, {x: canvas.width, y: canvas.height}, {hue: 0, sat: 0, lum: 100}, 1, -1); // Background
+        drawSquare({x:0,y:0}, {x: canvas.width, y: canvas.height}, {hue: 0, sat: 0, lum: 0}, 1, 5); // Background
+
+        // Tick Cart
+        if(Account.cart < 10) {
+            drawText("\nLimited Stock: " + JSON.stringify(buyNowItem.Stock) + " Items Remaining!", 30, {hue: 0, sat: 0, lum: 30}, 470, 140 + CurrentLine*35);
+            CurrentLine ++;
+        }
+
+        TickBanner();
+
+        // refresh the Item Catalogue Page constantly
+        if(page === "CartPage") {
+            setTimeout(() => { TickCart(); }, 1);
+        }
+    }
+
+
+    function RunBuyNow(buyNowItem) {
+        document.body.innerHTML = "";
+        page = "BuyNowPage";
+
+        canvas = document.createElement('canvas');
+        canvas.width = window.innerWidth - 30;
+        canvas.width = window.innerHeight - 15;
+        document.body.appendChild(canvas);
+        context = canvas.getContext('2d');
+
+        // Add event listener for `click` events.
+        canvas.addEventListener('click', function(event) {
+            let x = event.pageX,
+                y = event.pageY;
+            console.log("CLICK(" + x + ", " + y + ")");
+            lastClickTime = Date.now();
+            selected = getBannerClick(x, y);
+            if(selected == null) {
+                if (x > 50 && x < 230 && y > 450 && y < 600) {
+                    addToCart(buyNowItem, 1);
+                    selected = "Cart";
+                    RunCart();
+                } else if (x > 270 && x < 550 && y > 450 && y < 600) {
+                    addToCart(buyNowItem, 1);
+                    RunItemCatalogue();
                 }
-            } else if(x > canvas.width-130 && x < canvas.width-20 && y > 10 && y < 50) {
-                selected = "Cart";
-                RunCart();
-            } else if(x > 50 && x < 230 && y > 450 && y < 600) {
-                addToCart(buyNowItem, 1);
-                selected = "Cart";
-                RunCart();
-            } else if(x > 270 && x < 550 && y > 450 && y < 600) {
-                addToCart(buyNowItem, 1);
-                RunItemCatalogue();
             }
             console.log(selected);
         }, false);
@@ -887,7 +924,7 @@
         let length = 400, width = 300;
         let hMax = Math.floor((canvas.width-xBorder) / (width+xBorder));
         xBorder += ((canvas.width - width*hMax) / (hMax + 1)) - 20;
-        canvas.height = 60 + yBorder  +  (length + yBorder) * Math.ceil(items.length / hMax);
+        canvas.height = 60 + 300 + yBorder  +  (length + yBorder) * Math.ceil(items.length / hMax);
 
         drawSquare({x:0,y:0}, {x: canvas.width, y: canvas.height}, {hue: 0, sat: 0, lum: 100}, 1, -1); // Background
         drawSquare({x:0,y:0}, {x: canvas.width, y: canvas.height}, {hue: 0, sat: 0, lum: 0}, 1, 5); // Background
@@ -902,7 +939,7 @@
                 //Container
                 let containerLeft = xBorder+h*(xBorder+width);
                 let containerRight = (h+1)*(xBorder+width);
-                let bannerOffset = 60;
+                let bannerOffset = 60+300;
                 let containerTop = bannerOffset+yBorder+v*(yBorder+length);
                 let containerBottom = bannerOffset+(v+1)*(yBorder+length);
                 drawSquare({x:containerLeft,y:containerTop}, {x: containerRight, y: containerBottom}, {hue: 0, sat: 0, lum: 80}, 1, -1);
