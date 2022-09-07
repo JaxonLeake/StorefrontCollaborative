@@ -151,7 +151,8 @@
     function SignIn() {
         let UsernameInpSI = document.getElementById("text1").value; /*As mentioned before, this collects the input of textoxes based on ID*/
         let PasswordInpSI = document.getElementById("text2").value;
-        localStorage.setItem('Login',UsernameInpSI);console.log(UsernameInpSI);//STORE Input to easily to make change
+        localStorage.setItem('Login',UsernameInpSI);
+        console.log(UsernameInpSI);//STORE Input to easily to make change
         if(Account[0].Username === UsernameInpSI)
             {
                 if(Account[0].Password === PasswordInpSI)
@@ -189,8 +190,8 @@
 
     function AccountClone() {//this is just for shows, nothing important
         let sample = ["Adams","Baker","Clark","Davis","Evans","Frank","Ghosh","Hills","Irwin","Jones","Klein","Lopez","Mason","Nalty","Ochoa","Patel","Quinn","Reily","Smith","Trott","Usman","Valdo","White","Xiang","Yakub","Zafar"];
-        for (let index = 1; index <= 15; index++) {
-            Account[index]={
+        for (let index = 1; index <= 60; index++) {
+            Account[index] = {
                 Username: "Clone"+[index],
                 Password: "clone"+[index],
                 Firstname: sample[Math.floor(Math.random()*sample.length)],
@@ -205,12 +206,12 @@
         let Pass;
         let passConfirm;
         let User;
-        User=prompt("What would you like the ADMIN username to be?");
+        User = prompt("What would you like the ADMIN username to be?");
         do /*A do-while loop was specifically used so that the program only continues if the password entered matches the confirmation*/
         {
-            Pass=prompt("What would you like the ADMIN password to be?");
+            Pass = prompt("What would you like the ADMIN password to be?");
             // alert("If the confirmation isn't inputted correctly the process will be repeated");
-            passConfirm=prompt("Repeat the ADMIN password for confirmation...");
+            passConfirm = prompt("Repeat the ADMIN password for confirmation...");
         }while(Pass !== passConfirm)
         AccountClone()
         Account[0]= /*This is the array of object structure, the keys are set but the input is based on values within variables
@@ -232,10 +233,10 @@
     function SignUp() /*This function allows for user to not only sign in, but to sign up, as they may not alreayd have an account*/
     {
 
-        let UsernameInp=document.getElementById("text1").value; /*These lines store inputted data within sign up textboxes based on ID*/
-        let PasswordInp=document.getElementById("text2").value;
+        let UsernameInp = document.getElementById("text1").value; /*These lines store inputted data within sign up textboxes based on ID*/
+        let PasswordInp = document.getElementById("text2").value;
         let newSignUp = []
-        if((UsernameInp!= "") && (PasswordInp!=""))
+        if((UsernameInp != "") && (PasswordInp != ""))
         {
             let AccountSignup = newSignUp[Account.length]= /*This array of objects structure has a mix of inputs, with alreayd prompted values and prompts within the object*/
             {
@@ -363,10 +364,10 @@
     }
 
     function RunAccountSettings() {//Change detail of account by using username
-        let accountFind=localStorage.getItem('Login');
+        let accountFind = localStorage.getItem('Login');
         let obj = Account.find((o, i) => {
         if (o.Username === accountFind) {
-            changeDetail=prompt("What would you like to change? (Username/Password/Firstname/Surname/Connect/Amount)")
+            let changeDetail = prompt("What would you like to change? (Username/Password/Firstname/Surname/Connect/Amount)")
             switch (changeDetail) {
                 case "Username":
                     Account[i].Username =prompt("Write new Name");
@@ -413,7 +414,7 @@
         page = "Admin Account Page"
         canvas = document.createElement('canvas');
         canvas.width = window.innerWidth - 30;
-        canvas.width = window.innerHeight - 15;
+        canvas.height = window.innerHeight - 15;
         document.body.appendChild(canvas);
         context = canvas.getContext('2d');
         // Add event listener for `click` events.
@@ -456,29 +457,13 @@
             console.log(selected);
         }, false);
         AdminTickAccountCatalogue();
-        document.addEventListener("keydown", function(event) {
-            if(selected !== "Search Box") {
-                return;
-            }
-            if(event.key === "Backspace" && SearchboxContent.length > 0) {
-                SearchboxContent = SearchboxContent.slice(0, SearchboxContent.length-1);
-            } else {
-                if(event.key.length === 1) {
-                    SearchboxContent += event.key;
-                }
-            }
-        }, false);
-        
     }
 
     function AdminTickAccountCatalogue() {
         // Containers
         canvas.width = window.innerWidth - 30;
-        let xBorder = 20, yBorder = 20;
-        let length = 400, width = 300;
-        let hMax = Math.floor((canvas.width-xBorder) / (width+xBorder));
-        xBorder += ((canvas.width - width*hMax) / (hMax + 1)) - 20;
-        canvas.height = 60 + yBorder  +  (length + yBorder) * Math.ceil(items.length / hMax);
+        let xBorder = 40, yBorder = 30, length = 70;
+        canvas.height = 60 + yBorder + (length + yBorder) * Account.length;
 
         drawSquare({x:0,y:0}, {x: canvas.width, y: canvas.height}, {hue: 0, sat: 0, lum: 100}, 1, -1); // Background
         drawSquare({x:0,y:0}, {x: canvas.width, y: canvas.height}, {hue: 0, sat: 0, lum: 0}, 1, 5); // Background
@@ -486,8 +471,8 @@
 
         for(let i = 0; i<Account.length; i++) {
             //Account Container
-            drawSquare({x: 40,y:90 + i*100}, {x: canvas.width-40, y: 160 + i*100}, {hue: 0, sat: 0, lum: 80}, 1, -1);
-            drawSquare({x: 40,y:90 + i*100}, {x: canvas.width-40, y: 160 + i*100}, {hue: 0, sat: 0, lum: 50}, 1, 5);
+            drawSquare({x: xBorder,y:60+yBorder + i*(length+yBorder)}, {x: canvas.width-xBorder, y: 60 + (i+1)*(length+yBorder)}, {hue: 0, sat: 0, lum: 80}, 1, -1);
+            drawSquare({x: xBorder,y:60+yBorder + i*(length+yBorder)}, {x: canvas.width-xBorder, y: 60 + (i+1)*(length+yBorder)}, {hue: 0, sat: 0, lum: 50}, 1, 5);
             drawText(Account[i].Firstname, 35, {hue: 0, sat: 0, lum: 30}, 50, 142 + i*100);
             drawText(Account[i].Surname, 35, {hue: 0, sat: 0, lum: 30}, 200, 142 + i*100);
             drawText(Account[i].Connect, 35, {hue: 0, sat: 0, lum: 30}, 350, 142 + i*100);
@@ -796,10 +781,7 @@
         drawSquare({x:0,y:0}, {x: canvas.width, y: canvas.height}, {hue: 0, sat: 0, lum: 0}, 1, 5); // Background
 
         // Tick Cart
-        if(Account.cart < 10) {
-            drawText("\nLimited Stock: " + JSON.stringify(buyNowItem.Stock) + " Items Remaining!", 30, {hue: 0, sat: 0, lum: 30}, 470, 140 + CurrentLine*35);
-            CurrentLine ++;
-        }
+        drawText("Cart", 30, {hue: 0, sat: 0, lum: 30}, 470, 140);
 
         TickBanner();
 
