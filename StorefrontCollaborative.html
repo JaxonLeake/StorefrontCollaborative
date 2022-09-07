@@ -273,7 +273,18 @@
     }
 
     function addToCart(item, quantity) {
-
+        let itemIndex = -1;
+        for(let i = 0; i<Account[AccountNum].Cart.length; i++) {
+            if(Account[AccountNum].Cart[i].name === item) {
+                itemIndex = i;
+            }
+        }
+        if(itemIndex === -1) {
+            Account[AccountNum].Cart.push({name: item, quantity: quantity});
+        } else {
+            Account[AccountNum].Cart[itemIndex] = {name: item, quantity: Account[AccountNum].Cart[itemIndex].quantity + quantity};
+        }
+        saveAccounts();
     }
 
     function RunItemCatalogue() {
@@ -783,6 +794,14 @@
         // Tick Cart
         drawText("Cart", 30, {hue: 0, sat: 0, lum: 30}, 470, 140);
 
+        for(let i = 0; i<Account[AccountNum].Cart.length; i++) {
+            console.log(Account[AccountNum].Cart[i]);
+            console.log(Account[AccountNum].Cart[i].name);
+            console.log(Account[AccountNum].Cart[i].quantity);
+            drawText(Account[AccountNum].Cart[i].name, 30, {hue: 0, sat: 0, lum: 30}, 300, 200 + i*60);
+            drawText(Account[AccountNum].Cart[i].quantity + "x", 30, {hue: 0, sat: 0, lum: 30}, 600, 200 + i*60);
+        }
+
         TickBanner();
 
         // refresh the Item Catalogue Page constantly
@@ -810,11 +829,11 @@
             selected = getBannerClick(x, y);
             if(selected == null) {
                 if (x > 50 && x < 230 && y > 450 && y < 600) {
-                    addToCart(buyNowItem, 1);
+                    addToCart(buyNowItem.Name, 1);
                     selected = "Cart";
                     RunCart();
                 } else if (x > 270 && x < 550 && y > 450 && y < 600) {
-                    addToCart(buyNowItem, 1);
+                    addToCart(buyNowItem.Name, 1);
                     RunItemCatalogue();
                 }
             }
@@ -995,6 +1014,7 @@
         context.font = size + 'px serif';
         context.fillStyle = 'hsl('+ colour.hue + ',' + colour.sat + '%,' + colour.lum + '%)';
         context.globalAlpha = 1;
+        console.log("Draw " + text);
         let lines = text.split("\n");
         for(let i = 0; i < lines.length; i++) {
             context.fillText(lines[i], x, y+i*size);
