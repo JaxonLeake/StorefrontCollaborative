@@ -428,21 +428,23 @@
                 selected = "Enter Search Box";
                 query = SearchboxContent;
                 GetFilteredItems();
-            } else if((x > canvas.width-380 && x < canvas.width-50) &&((y > 10 && y < 50) ||(selected === "Admin" && y > 10 && y < 170))) {
+            } else if((x > canvas.width-380 && x < canvas.width-50) &&((y > 10 && y < 50) ||(selected === "Admin" && y > 10 && y < 210))) {
                 selected = "Admin";
                 if(y > 50 && y < 90) {
                     selected = "addItem";
                     addItem();
                 } else if(y > 90 && y < 130) {
+                    selected = "AdminAccountCatalogue";
+                    AdminAccountCatalogue();
+                } else if(y > 130 && y < 170) {
                     selected = "AdminItemCatalogue";
                     AdminItemCatalogue();
-                } else if(y > 130 && y < 170) {
+                } else if(y > 170 && y < 210) {
                     selected = "RunSignIn";
                     LogIn();
                 }
             } else {
                 selected = null;
-                // Check if buy now buttons were pressed
                 for(let i = 0; i<Account.length; i++) {
                     if(x > canvas.width-120 && x < canvas.width-50) {
                         if(y > 105 + i*100 && y < 145 + i*100) {
@@ -526,16 +528,18 @@
                 selected = "Enter Search Box";
                 query = SearchboxContent;
                 GetFilteredItems();
-            } else if((x > canvas.width-380 && x < canvas.width-50) &&((y > 10 && y < 50) ||(selected === "Admin" && y > 10 && y < 170))) {
+            } else if((x > canvas.width-380 && x < canvas.width-50) &&((y > 10 && y < 50) ||(selected === "Admin" && y > 10 && y < 210))) {
                 selected = "Admin";
                 if(y > 50 && y < 90) {
                     selected = "addItem";
                     addItem();
                 } else if(y > 90 && y < 130) {
                     selected = "AdminAccountCatalogue";
-                    // editAccount();//select the account to change
                     AdminAccountCatalogue();
                 } else if(y > 130 && y < 170) {
+                    selected = "AdminItemCatalogue";
+                    AdminItemCatalogue();
+                } else if(y > 170 && y < 210) {
                     selected = "RunSignIn";
                     LogIn();
                 }
@@ -665,10 +669,13 @@
             drawText("Add New Item", 30, {hue: 0, sat: 0, lum: 30}, canvas.width-360, 80);
             drawSquare({x:canvas.width-380,y:90}, {x: canvas.width-50, y: 130}, {hue: 0, sat: 0, lum: 85}, 1, -1);
             drawSquare({x:canvas.width-380,y:90}, {x: canvas.width-50, y: 130}, {hue: 0, sat: 0, lum: 50}, 1, 5);
-            drawText("Edit Accounts/Items", 30, {hue: 0, sat: 0, lum: 30}, canvas.width-360, 120);
+            drawText("Edit Accounts", 30, {hue: 0, sat: 0, lum: 30}, canvas.width-360, 120);
             drawSquare({x:canvas.width-380,y:130}, {x: canvas.width-50, y: 170}, {hue: 0, sat: 0, lum: 85}, 1, -1);
             drawSquare({x:canvas.width-380,y:130}, {x: canvas.width-50, y: 170}, {hue: 0, sat: 0, lum: 50}, 1, 5);
-            drawText("Log Out", 30, {hue: 0, sat: 0, lum: 30}, canvas.width-360, 160);
+            drawText("Edit Items", 30, {hue: 0, sat: 0, lum: 30}, canvas.width-360, 160);
+            drawSquare({x:canvas.width-380,y:170}, {x: canvas.width-50, y: 210}, {hue: 0, sat: 0, lum: 85}, 1, -1);
+            drawSquare({x:canvas.width-380,y:170}, {x: canvas.width-50, y: 210}, {hue: 0, sat: 0, lum: 50}, 1, 5);
+            drawText("Log Out", 30, {hue: 0, sat: 0, lum: 30}, canvas.width-360, 200);
         }
     }
 
@@ -999,6 +1006,9 @@
      * @param y distance that top of text is from top of screen
      */
     function drawText(text, size, colour, x, y) {
+        if(text == null) {
+            return;
+        }
         context.beginPath();
         context.font = size + 'px serif';
         context.fillStyle = 'hsl('+ colour.hue + ',' + colour.sat + '%,' + colour.lum + '%)';
