@@ -313,7 +313,7 @@
                     }
                 }
             }
-            console.log(selected);
+            console.log("Selected: " + selected);
         }, false);
         TickItemCatalogue();
     }
@@ -465,7 +465,7 @@
                     }
                 }
             }
-            console.log(selected);
+            console.log("Selected: " + selected);
         }, false);
         AdminTickAccountCatalogue();
     }
@@ -551,7 +551,7 @@
                     }
                 }
             }
-            console.log(selected);
+            console.log("Selected: " + selected);
         }, false);
         document.addEventListener("keydown", function(event) {
             if(selected !== "Search Box") {
@@ -695,11 +695,11 @@
 
     function editItem(params) {
         console.log(params);
-        let itemfind=params;
+        let findItem = params;
         let obj = items.find((o, i) => {
-        if (o.Name === itemfind) {
-            changeDetail=prompt("What would you like to change? (Name/Description/Price/Stock)")
-            switch (changeDetail) {
+        if (o.Name === findItem) {
+            let selectedAttribute = prompt("What would you like to change? (Name/Description/Price/Stock)")
+            switch (selectedAttribute) {
                 case "Name":
                 items[i].Name =prompt("Write new Name");
                 break;
@@ -776,9 +776,44 @@
             lastClickTime = Date.now();
             selected = getBannerClick(x, y);
             if(selected == null) {
-                //Page Specific Buttons
+                let containerLeft = 40, containerRight = 800, containerTop = 60+40, containerBottom = canvas.height-40;
+                let border = 20;
+                //Cart Buttons
+                for(let i = 0; i<Account[AccountNum].Cart.length; i++) {
+                    let cartEntry = Account[AccountNum].Cart[i];
+                    // Reduce
+                    if(x > 550 && x < 590 && y > 170+i*60 && y < 210+i*60) {
+                        selected = "Reduce " + cartEntry.name;
+                        if(cartEntry.quantity > 1) {
+                            cartEntry.quantity-=1;
+                            Account[AccountNum].Cart[i] = cartEntry;
+                        }
+                        return;
+                    }
+                    // Increase
+                    if(x > 680 && x < 720 && y > 170+i*60 && y < 210+i*60) {
+                        selected = "Increase " + cartEntry.name;
+                        cartEntry.quantity+=1;
+                        Account[AccountNum].Cart[i] = cartEntry;
+                        return;
+                    }
+                    // Remove
+                    if(x > 740 && x < 780 && y > 170+i*60 && y < 210+i*60) {
+                        selected = "Remove " + cartEntry.name;
+                        Account[AccountNum].Cart.splice(i, 1);
+                        return;
+                    }
+                    saveAccounts();
+                }
+
+                // Confirm Order
+                if(x > containerRight-border-200 && x < containerRight-border && y > containerBottom-border-40 && y < containerBottom-border) {
+                    selected = "Confirm Order";
+                    Account[AccountNum].Cart = [];
+                    RunItemCatalogue();
+                }
             }
-            console.log(selected);
+            console.log("Selected: " + selected);
         }, false);
         TickCart();
     }
@@ -791,16 +826,39 @@
         drawSquare({x:0,y:0}, {x: canvas.width, y: canvas.height}, {hue: 0, sat: 0, lum: 100}, 1, -1); // Background
         drawSquare({x:0,y:0}, {x: canvas.width, y: canvas.height}, {hue: 0, sat: 0, lum: 0}, 1, 5); // Background
 
+        let containerLeft = 40, containerRight = 800, containerTop = 60+40, containerBottom = canvas.height-40;
+        let border = 20;
+
+        drawSquare({x:containerLeft,y:containerTop}, {x: containerRight, y: containerBottom}, {hue: 0, sat: 0, lum: 80}, 1, -1);
+        drawSquare({x:containerLeft,y:containerTop}, {x: containerRight, y: containerBottom}, {hue: 0, sat: 0, lum: 50}, 1, 5);
+
         // Tick Cart
-        drawText("Cart", 30, {hue: 0, sat: 0, lum: 30}, 470, 140);
+        drawText("Cart", 30, {hue: 0, sat: 0, lum: 30}, 400, 150);
+        drawSquare({x: containerLeft+border , y: 160}, {x: containerRight-border , y: 160}, {hue: 0, sat: 0, lum: 60}, 1, 5);
 
         for(let i = 0; i<Account[AccountNum].Cart.length; i++) {
-            console.log(Account[AccountNum].Cart[i]);
-            console.log(Account[AccountNum].Cart[i].name);
-            console.log(Account[AccountNum].Cart[i].quantity);
-            drawText(Account[AccountNum].Cart[i].name, 30, {hue: 0, sat: 0, lum: 30}, 300, 200 + i*60);
-            drawText(Account[AccountNum].Cart[i].quantity + "x", 30, {hue: 0, sat: 0, lum: 30}, 600, 200 + i*60);
+            // Quantity
+            drawText(Account[AccountNum].Cart[i].name, 30, {hue: 0, sat: 0, lum: 30}, containerLeft+border, 200+i*60);
+            drawText(Account[AccountNum].Cart[i].quantity + "x", 30, {hue: 0, sat: 0, lum: 30}, 600, 200+i*60);
+            drawText("$" + getItemByName(Account[AccountNum].Cart[i].name).Price, 30, {hue: 0, sat: 0, lum: 30}, 480, 200+i*60);
+            // Left
+            drawSquare({x:550, y:170+i*60}, {x:590, y:210+i*60}, {hue: 0, sat: 0, lum: 80}, 1, -1);
+            drawSquare({x:550, y:170+i*60}, {x:590, y:210+i*60}, {hue: 0, sat: 0, lum: 50}, 1, 5);
+            drawText("<", 30, {hue: 0, sat: 0, lum: 30}, 560, 200+i*60);
+            // Right
+            drawSquare({x:680, y:170+i*60}, {x:720, y:210+i*60}, {hue: 0, sat: 0, lum: 80}, 1, -1);
+            drawSquare({x:680, y:170+i*60}, {x:720, y:210+i*60}, {hue: 0, sat: 0, lum: 50}, 1, 5);
+            drawText(">", 30, {hue: 0, sat: 0, lum: 30}, 690, 200+i*60);
+            // Remove
+            drawSquare({x:740, y:170+i*60}, {x:780, y:210+i*60}, {hue: 0, sat: 100, lum: 75}, 1, -1);
+            drawSquare({x:740, y:170+i*60}, {x:780, y:210+i*60}, {hue: 0, sat: 100, lum: 25}, 1, 5);
+            drawText("X", 30, {hue: 0, sat: 100, lum: 25}, 750, 200+i*60);
         }
+
+        // Confirm Order
+        drawSquare({x:containerRight-border-200, y:containerBottom-border-40}, {x:containerRight-border, y:containerBottom-border}, {hue: 0, sat: 0, lum: 80}, 1, -1);
+        drawSquare({x:containerRight-border-200, y:containerBottom-border-40}, {x:containerRight-border, y:containerBottom-border}, {hue: 0, sat: 0, lum: 50}, 1, 5);
+        drawText("Confirm Order", 30, {hue: 0, sat: 0, lum: 30}, containerRight-border-190, containerBottom-border-10);
 
         TickBanner();
 
@@ -837,7 +895,7 @@
                     RunItemCatalogue();
                 }
             }
-            console.log(selected);
+            console.log("Selected: " + selected);
         }, false);
         TickBuyNow(buyNowItem);
     }
@@ -868,7 +926,6 @@
             if(SearchboxContent === "") {
                 drawText("Search . . .", 30, {hue: 0, sat: 0, lum: 60}, searchBoxStart+20, 40);
                 if(selected === "Search Box" && Math.round((Date.now())/cursorBlink) % 2 === 0) {
-                    console.log("Search Box Anim");
                     drawText("|", 30, {hue: 0, sat: 0, lum: 60}, searchBoxStart+15, 38);
                 }
             } else {
@@ -989,7 +1046,6 @@
         }
         buyNowButtons = buyNowButtonSetter;
 
-
         TickBanner();
 
         // refresh the Item Catalogue Page constantly
@@ -1014,7 +1070,6 @@
         context.font = size + 'px serif';
         context.fillStyle = 'hsl('+ colour.hue + ',' + colour.sat + '%,' + colour.lum + '%)';
         context.globalAlpha = 1;
-        console.log("Draw " + text);
         let lines = text.split("\n");
         for(let i = 0; i < lines.length; i++) {
             context.fillText(lines[i], x, y+i*size);
@@ -1043,7 +1098,6 @@
      * @returns void
      */
     function drawPolygon(vertices, colour, opacity, strokeSize) {
-        //console.log(vertices);
         context.beginPath();
         context.fillStyle = 'hsl('+ colour.hue + ',' + colour.sat + '%,' + colour.lum + '%)';
         context.globalAlpha = opacity;
