@@ -414,7 +414,7 @@
             } else if(x > searchBoxEnd-40 && x < searchBoxEnd && y > 10 && y < 50) {
                 selected = "Enter Search Box";
                 query = SearchboxContent;
-                GetFilteredItems();
+                GetFilteredAccount();
             } else if((x > canvas.width-380 && x < canvas.width-50) &&((y > 10 && y < 50) ||(selected === "Admin" && y > 10 && y < 210))) {
                 selected = "Admin";
                 if(y > 50 && y < 90) {
@@ -683,15 +683,11 @@
                 items.push(item);
                 //saving to localStorage
                 localStorage.setItem('ItemList', JSON.stringify(items));
-                console.log(items);//checking              
+                GetFilteredItems();          
                 AdminItemCatalogue()}
             else{alert("Please Input Correctly")};
         });
-        document.body.appendChild(button);document.write("<BR>");
-
-
-        
-
+        document.body.appendChild(button);document.write("<BR>");//where button display
     }
 
     function editItem(params) {
