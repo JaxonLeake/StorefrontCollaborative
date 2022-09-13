@@ -13,7 +13,6 @@
     let items = [];
     let internalFilteredItems = [];
     let buyNowButtons = [];
-    let internalFilteredAccount = [];
 
     /**
      * Item Catalogue
@@ -32,10 +31,7 @@
     let lastClickTime = Date.now();
 
     // Josh Globals
-    let Account = [];//{Username: '', Password: '', Firstname: '', Surname: '', Connect: '', Cart: [{name: '', quantity: ''}, {name: '', quantity: ''}]}
-    let Item; /*This array of objects stores all the relevant details for items, for the preset, and for items to be added*/
-    let accountLength; /* Account Length */
-    let itemLength; /* Item Length */
+    let Account = []; // Format: {Username: '', Password: '', Firstname: '', Surname: '', Connect: '', Cart: [{name: '', quantity: ''}, ... , {name: '', quantity: ''}]}
     let AccountNum;
 
     /**
@@ -43,14 +39,23 @@
      */
 
     function bigDog() {
-        Initialise()
-        LogIn()
-        var _lsTotal=0,_xLen,_x;for(_x in localStorage){ if(!localStorage.hasOwnProperty(_x)){continue;} _xLen= ((localStorage[_x].length + _x.length)* 2);_lsTotal+=_xLen; console.log(_x.substr(0,50)+" = "+ (_xLen/1024).toFixed(2)+" KB")};console.log("Total = " + (_lsTotal / 1024).toFixed(2) + " KB");
+        Initialise();
+        LogIn();
+        let _lsTotal=0, _xLen, _x;
+        for(_x in localStorage) {
+            if(!localStorage.hasOwnProperty(_x)) {
+                continue;
+            }
+            _xLen = ((localStorage[_x].length + _x.length)* 2);
+            _lsTotal+=_xLen;
+            console.log(_x.slice(0,50)+" = "+ (_xLen/1024).toFixed(2)+" KB");
+        }
+        console.log("Total = " + (_lsTotal / 1024).toFixed(2) + " KB");
         //checking the limitation of localStorage
     }
 
-    function Initialise() /*Not sure if it's necessary, but it was in the structure chart, so I thought why not*/
-    {
+    /*Not sure if it's necessary, but it was in the structure chart, so I thought why not*/
+    function Initialise() {
         loadData();
         document.addEventListener("keydown", function(event) {
             if(selected !== "Search Box") {
@@ -219,7 +224,7 @@
         let UsernameInp = document.getElementById("text1").value; /*These lines store inputted data within sign up textboxes based on ID*/
         let PasswordInp = document.getElementById("text2").value;
         let newSignUp = []
-        if((UsernameInp != "") && (PasswordInp != ""))
+        if((UsernameInp !== "") && (PasswordInp !== ""))
         {
             let AccountSignup = newSignUp[Account.length]= /*This array of objects structure has a mix of inputs, with alreayd prompted values and prompts within the object*/
             {
@@ -238,7 +243,7 @@
         console.log(Account);
         LogIn()
         }
-        else if((UsernameInp=="")||(PasswordInp==""))
+        else if((UsernameInp === "")||(PasswordInp === ""))
         {
             alert("No Username or Password has been inputted")
             LogIn()
@@ -304,16 +309,13 @@
             RunItemCatalogue();
             return "Enter Search Box";
         } else if((x > canvas.width-380 && x < canvas.width-150) &&
-            ((y > 10 && y < 50) || (selected === "Account Box" && y > 10 && y < 170))) {
+            ((y > 10 && y < 50) || (selected === "Account Box" && y > 10 && y < 130))) {
             if(y > 50 && y < 90) {
                 RunAccountSettings();
                 return "Account Settings";
             } else if(y > 90 && y < 130) {
-                RunUnknown();
-                return "Placeholder";
-            } else if(y > 130 && y < 170) {
                 LogIn();
-                return "Sign In";
+                return "Log out";
             } else {
                 return "Account Box";
             }
@@ -389,12 +391,6 @@
         console.log(Account);
     }
 
-    function RunUnknown() {
-        document.body.innerHTML = "";
-        page = "Placeholder";
-        document.write("Placeholder Page Placeholder");
-    }
-
     function AdminAccountCatalogue() {
         document.body.innerHTML = "";
         page = "Admin Account Page"
@@ -414,7 +410,6 @@
             } else if(x > searchBoxEnd-40 && x < searchBoxEnd && y > 10 && y < 50) {
                 selected = "Enter Search Box";
                 query = SearchboxContent;
-                GetFilteredAccount();
             } else if((x > canvas.width-380 && x < canvas.width-50) &&((y > 10 && y < 50) ||(selected === "Admin" && y > 10 && y < 210))) {
                 selected = "Admin";
                 if(y > 50 && y < 90) {
@@ -679,13 +674,15 @@
                 Price: parseInt(document.getElementById("productPrice").value)||0,
                 Stock: parseInt(document.getElementById("productStock").value)||0
             }
-            if (item.Name != '' || item.Description != '') {
+            if (item.Name !== '' || item.Description !== '') {
                 items.push(item);
                 //saving to localStorage
                 localStorage.setItem('ItemList', JSON.stringify(items));
                 GetFilteredItems();
                 AdminItemCatalogue()}
-            else{alert("Please Input Correctly")};
+            else{
+                alert("Please Input Correctly");
+            }
         });
         document.body.appendChild(button);document.write("<BR>");//where button display
     }
@@ -769,7 +766,7 @@
             lastClickTime = Date.now();
             selected = getBannerClick(x, y);
             if(selected == null) {
-                let containerLeft = 40, containerRight = 800, containerTop = 60+40, containerBottom = canvas.height-40;
+                let containerRight = 800, containerBottom = canvas.height-40;
                 let border = 20;
                 //Cart Buttons
                 for(let i = 0; i<Account[AccountNum].Cart.length; i++) {
@@ -976,10 +973,7 @@
             drawText("Account Settings", 30, {hue: 0, sat: 0, lum: 30}, canvas.width-360, 80);
             drawSquare({x:canvas.width-380,y:90}, {x: canvas.width-150, y: 130}, {hue: 0, sat: 0, lum: 85}, 1, -1);
             drawSquare({x:canvas.width-380,y:90}, {x: canvas.width-150, y: 130}, {hue: 0, sat: 0, lum: 50}, 1, 5);
-            drawText("Placeholder", 30, {hue: 0, sat: 0, lum: 30}, canvas.width-360, 120);
-            drawSquare({x:canvas.width-380,y:130}, {x: canvas.width-150, y: 170}, {hue: 0, sat: 0, lum: 85}, 1, -1);
-            drawSquare({x:canvas.width-380,y:130}, {x: canvas.width-150, y: 170}, {hue: 0, sat: 0, lum: 50}, 1, 5);
-            drawText("Log Out", 30, {hue: 0, sat: 0, lum: 30}, canvas.width-360, 160);
+            drawText("Log Out", 30, {hue: 0, sat: 0, lum: 30}, canvas.width-360, 120);
         }
     }
 
