@@ -802,22 +802,33 @@
                 // Confirm Order
                 if(x > containerRight-border-200 && x < containerRight-border && y > containerBottom-border-40 && y < containerBottom-border) {
                     selected = "Confirm Order";
-                    let summary = "Purchase Successful\n"
-                    summary += "----------------------\n";
                     let total = 0;
                     for(let i = 0; i<Account[AccountNum].Cart.length; i++) {
                         let cartEntry = Account[AccountNum].Cart[i];
-                        summary += cartEntry.quantity + "x "
-                        summary += cartEntry.name + " = $"
-                        summary += getItemByName(cartEntry.name).Price + "\n"
                         total += getItemByName(cartEntry.name).Price * cartEntry.quantity;
                     }
-                    summary += "----------------------\n";
-                    summary += "Total: $" + total;
-                    alert(summary);
-                    Account[AccountNum].Cart = [];
-                    saveAccounts();
-                    RunItemCatalogue(total);
+                    if(Account[AccountNum].Cart.length <= 0) {
+                        alert("Error: no items in cart");
+                    } else if (Account[AccountNum].Amount < total) {
+                        alert("Not enough funds\nThe total cost is $" + total.toFixed(2) + " but you only have $" + Account[AccountNum].Amount);
+                    } else {
+                        let summary = "Purchase Successful\n"
+                        summary += "----------------------\n";
+                        for(let i = 0; i<Account[AccountNum].Cart.length; i++) {
+                            let cartEntry = Account[AccountNum].Cart[i];
+                            summary += cartEntry.quantity + "x "
+                            summary += cartEntry.name + " = $"
+                            summary += getItemByName(cartEntry.name).Price + "\n"
+                        }
+                        summary += "----------------------\n";
+                        summary += "Total: $" + total.toFixed(2) + "\n";
+                        Account[AccountNum].Amount -= total;
+                        summary += "New Balance: $" + Account[AccountNum].Amount;
+                        alert(summary);
+                        Account[AccountNum].Cart = [];
+                        saveAccounts();
+                        RunItemCatalogue();
+                    }
                 }
             }
             console.log("Selected: " + selected);
@@ -866,6 +877,12 @@
         drawSquare({x:containerRight-border-200, y:containerBottom-border-40}, {x:containerRight-border, y:containerBottom-border}, {hue: 0, sat: 0, lum: 80}, 1, -1);
         drawSquare({x:containerRight-border-200, y:containerBottom-border-40}, {x:containerRight-border, y:containerBottom-border}, {hue: 0, sat: 0, lum: 50}, 1, 5);
         drawText("Confirm Order", 30, {hue: 0, sat: 0, lum: 30}, containerRight-border-190, containerBottom-border-10);
+        let total = 0;
+        for(let i = 0; i<Account[AccountNum].Cart.length; i++) {
+            let cartEntry = Account[AccountNum].Cart[i];
+            total += getItemByName(cartEntry.name).Price * cartEntry.quantity;
+        }
+        drawText("Total Cost: " + total.toFixed(2), 30, {hue: 0, sat: 0, lum: 30}, containerLeft+border, containerBottom-border-10);
 
         TickBanner();
 
